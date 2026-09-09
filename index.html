@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al-Khizana — ESEF Berrechid Student Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#122622;
+    --ink-soft:#4d6660;
+    --paper:#f7f3e8;
+    --paper-deep:#efe8d6;
+    --teal:#164f47;
+    --teal-deep:#0d332d;
+    --brass:#a9822f;
+    --brass-soft:#c9a55c;
+    --line:#d9cfae;
+    --card:#ffffff;
+    --radius:4px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'IBM Plex Serif', serif;
+    font-weight:700;
+    margin:0;
+    color:var(--teal-deep);
+  }
+  a{color:inherit;}
+  img,svg{display:block;}
+
+  /* ---------- layout shell ---------- */
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- header ---------- */
+  header{
+    padding:22px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .mark{
+    width:38px;height:38px;flex-shrink:0;
+  }
+  .brand-text{display:flex;flex-direction:column;line-height:1.25;}
+  .brand-text b{font-family:'IBM Plex Serif',serif;font-size:19px;color:var(--teal-deep);}
+  .brand-text span{font-size:12.5px;color:var(--ink-soft);}
+  .about-btn{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:8px 16px;
+    font-family:inherit;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .about-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+  .modal-backdrop{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,26,23,.45);
+    backdrop-filter:blur(2px);
+    z-index:50;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    position:relative;
+    background:var(--card);
+    border-radius:6px;
+    max-width:420px;
+    width:100%;
+    padding:32px 28px 28px;
+  }
+  .modal h2{font-size:21px;margin-bottom:14px;}
+  .modal-text{font-size:14px;color:var(--ink-soft);margin:0;}
+  .modal-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    background:none;
+    border:none;
+    font-size:22px;
+    line-height:1;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .modal-social{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);}
+  .modal-social-label{font-size:12.5px;color:var(--ink-soft);display:block;margin-bottom:8px;}
+  .modal-social-empty{font-size:13.5px;color:var(--ink-soft);}
+  .modal-social a{
+    display:inline-flex;
+    margin-right:10px;
+    font-size:13.5px;
+    color:var(--teal);
+    text-decoration:none;
+    font-weight:600;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:76px 0 56px;
+    opacity:0;
+    transform:translateY(14px);
+    animation:rise .8s ease forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .hero h1{
+    font-size:clamp(34px,6vw,54px);
+    line-height:1.2;
+    max-width:13ch;
+  }
+  .hero p{
+    margin-top:18px;
+    max-width:52ch;
+    font-size:17px;
+    color:var(--ink-soft);
+  }
+  .hero-strip{
+    margin-top:34px;
+    display:flex;
+    gap:28px;
+    flex-wrap:wrap;
+    padding-top:22px;
+    border-top:1px solid var(--line);
+  }
+  .hero-strip div{font-size:13.5px;color:var(--ink-soft);}
+  .hero-strip b{
+    display:block;
+    font-family:'IBM Plex Serif',serif;
+    font-size:15px;
+    color:var(--teal);
+    margin-bottom:2px;
+  }
+
+  /* ---------- browse panel ---------- */
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px;
+    opacity:0;
+    transform:translateY(14px);
+    animation:rise .8s ease .18s forwards;
+  }
+  .panel-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .panel-head h2{font-size:22px;}
+  .panel-head p{margin:4px 0 0;color:var(--ink-soft);font-size:14px;}
+
+  .filters{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+  }
+  @media(max-width:640px){.filters{grid-template-columns:1fr 1fr;}}
+
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12.5px;color:var(--ink-soft);}
+  .field select{
+    appearance:none;
+    -webkit-appearance:none;
+    border:1px solid var(--line);
+    background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234d6660' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 12px center no-repeat;
+    padding:11px 14px 11px 34px;
+    border-radius:3px;
+    font-family:inherit;
+    font-size:14.5px;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .field select:disabled{color:#a9a390;cursor:not-allowed;}
+
+  .type-row{
+    margin-top:16px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    border:1px solid var(--line);
+    background:transparent;
+    padding:7px 15px;
+    border-radius:20px;
+    font-family:inherit;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .chip.active{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+
+  /* ---------- results ---------- */
+  .results{margin-top:30px;}
+  .results-count{font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  @media(max-width:640px){.grid{grid-template-columns:1fr;}}
+
+  .file-card{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    background:var(--card);
+  }
+  .file-card .badges{display:flex;gap:6px;flex-wrap:wrap;}
+  .badge{
+    font-size:11.5px;
+    padding:3px 9px;
+    border-radius:20px;
+    background:var(--paper-deep);
+    color:var(--teal-deep);
+  }
+  .badge.type{background:#f1e6c9;color:var(--brass);}
+  .file-card h3{font-family:'IBM Plex Sans';font-weight:600;font-size:16px;color:var(--ink);}
+  .file-card a.open{
+    margin-top:auto;
+    font-size:13.5px;
+    color:var(--teal);
+    text-decoration:none;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  /* ---------- empty state ---------- */
+  .empty{
+    padding:52px 20px;
+    text-align:center;
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+  }
+  .empty h3{font-size:19px;margin-bottom:8px;}
+  .empty p{color:var(--ink-soft);font-size:14.5px;max-width:44ch;margin:0 auto;}
+
+  /* ---------- how it grows ---------- */
+  .grow{padding:64px 0;}
+  .grow h2{font-size:24px;margin-bottom:8px;}
+  .grow > p{color:var(--ink-soft);max-width:56ch;margin-top:0;}
+  .steps{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+  }
+  @media(max-width:640px){.steps{grid-template-columns:1fr;}}
+  .step{border-top:2px solid var(--brass-soft);padding-top:14px;}
+  .step h3{font-family:'IBM Plex Sans';font-weight:600;font-size:15.5px;color:var(--teal-deep);margin-bottom:6px;}
+  .step p{font-size:13.5px;color:var(--ink-soft);margin:0;}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:26px 0 40px;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-row">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" fill="none">
+        <path d="M20 3 L35 11 V29 L20 37 L5 29 V11 Z" stroke="#164f47" stroke-width="1.4"/>
+        <path d="M20 3 V37 M5 11 L35 29 M35 11 L5 29" stroke="#a9822f" stroke-width="1"/>
+      </svg>
+      <div class="brand-text">
+        <b>Al-Khizana</b>
+        <span>ESEF Berrechid — Primary Education</span>
+      </div>
+    </div>
+    <button class="about-btn" id="aboutBtn" type="button" aria-haspopup="dialog">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 9v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="10" cy="6.3" r="1" fill="currentColor"/></svg>
+      About Us
+    </button>
+  </div>
+</header>
+
+<div class="modal-backdrop" id="aboutBackdrop">
+  <div class="modal" role="dialog" aria-label="About Us">
+    <button class="modal-close" id="aboutClose" type="button" aria-label="Close">×</button>
+    <h2>About Us</h2>
+    <p class="modal-text">Al-Khizana was created by Nabil EL MAALMI, a student at École Supérieure de l'Éducation et de la Formation (ESEF) Berrechid, to bring Primary Education course materials together in one organized place — instead of leaving students to track lessons down one by one. The initiative is independent, entirely free, and not affiliated with the school's administration.</p>
+    <div class="modal-social">
+      <span class="modal-social-label">Follow us</span>
+      <div id="socialLinks"></div>
+    </div>
+  </div>
+</div>
+
+<section class="wrap hero">
+  <h1>One shelf for every module.</h1>
+  <p>A free, open archive of course materials for Primary Education students at ESEF Berrechid — built by students, for students, so finding a lesson no longer depends on who you happen to ask.</p>
+  <div class="hero-strip">
+    <div><b>3</b>years covered</div>
+    <div><b>2</b>semesters per year</div>
+    <div><b>Free</b>no sign-up required</div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Browse the archive</h2>
+        <p>Choose a year and semester, then narrow by module or file type.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="field">
+        <label for="fYear">Year</label>
+        <select id="fYear">
+          <option value="">All years</option>
+          <option value="1">Year 1</option>
+          <option value="2">Year 2</option>
+          <option value="3">Year 3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fSem">Semester</label>
+        <select id="fSem" disabled>
+          <option value="">Choose a year first</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fModule">Module</label>
+        <select id="fModule" disabled>
+          <option value="">All modules</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="type-row" id="typeRow"></div>
+
+    <div class="results">
+      <div class="results-count" id="resultsCount"></div>
+      <div id="resultsArea"></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap grow">
+  <h2>How the archive grows</h2>
+  <p>The archive fills in gradually, module by module, rather than launching full and staying that way. Here's the process we're following:</p>
+  <div class="steps">
+    <div class="step">
+      <h3>Collecting lessons</h3>
+      <p>Materials are gathered directly from students, module by module, semester by semester — starting with Primary Education.</p>
+    </div>
+    <div class="step">
+      <h3>Sorting and tagging</h3>
+      <p>Each file is tagged by year, semester, module, and type — lesson, summary, past exam, or exercises — before it's published here.</p>
+    </div>
+    <div class="step">
+      <h3>Growing in stages</h3>
+      <p>Once Primary Education is complete, the archive opens to other specializations under the same standards.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>Al-Khizana — an independent student initiative</span>
+  <span>ESEF Berrechid</span>
+</footer>
+
+<script>
+/* ============================================================
+   Lesson database — add each file as a new entry in this array.
+
+   Example:
+   {
+     specialization: "Primary Education",
+     year: 2,                 // 1, 2, or 3
+     semester: 3,             // real semester number: 1/2 for year 1, 3/4 for year 2, 5/6 for year 3
+     module: "Educational Sciences",  // module name as students know it (differs per semester)
+     type: "Lesson",          // "Lesson" | "Summary" | "Past exam" | "Exercises"
+     title: "Introduction to Educational Sciences — Part 1",
+     url: "https://drive.google.com/..."
+   },
+
+   The archive starts empty on purpose, and this list fills in over time.
+============================================================ */
+const DROOS = [
+  // add entries here, following the format above
+];
+
+// Add social links here once ready, e.g.:
+// { label: "Telegram", url: "https://t.me/..." },
+const SOCIAL_LINKS = [
+];
+
+const SEMESTERS_BY_YEAR = {1:[1,2], 2:[3,4], 3:[5,6]};
+
+const TYPES = ["Lesson","Summary","Past exam","Exercises"];
+let activeTypes = new Set();
+
+const fYear = document.getElementById('fYear');
+const fSem = document.getElementById('fSem');
+const fModule = document.getElementById('fModule');
+const typeRow = document.getElementById('typeRow');
+const resultsArea = document.getElementById('resultsArea');
+const resultsCount = document.getElementById('resultsCount');
+
+TYPES.forEach(t=>{
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.textContent = t;
+  b.type = 'button';
+  b.addEventListener('click', ()=>{
+    if(activeTypes.has(t)){activeTypes.delete(t); b.classList.remove('active');}
+    else{activeTypes.add(t); b.classList.add('active');}
+    render();
+  });
+  typeRow.appendChild(b);
+});
+
+function refreshSemesters(){
+  if(!fYear.value){
+    fSem.innerHTML = '<option value="">Choose a year first</option>';
+    fSem.disabled = true;
+    fSem.value = '';
+    return;
+  }
+  const sems = SEMESTERS_BY_YEAR[fYear.value];
+  fSem.innerHTML = '<option value="">Both semesters</option>' +
+    sems.map(s=>`<option value="${s}">Semester ${s}</option>`).join('');
+  fSem.disabled = false;
+}
+
+function currentScope(){
+  return DROOS.filter(d=>{
+    if(fYear.value && String(d.year) !== fYear.value) return false;
+    if(fSem.value && String(d.semester) !== fSem.value) return false;
+    return true;
+  });
+}
+
+function refreshModules(){
+  const scope = currentScope();
+  const mods = [...new Set(scope.map(d=>d.module))].sort((a,b)=>a.localeCompare(b));
+  fModule.innerHTML = '<option value="">All modules</option>' + mods.map(m=>`<option value="${m}">${m}</option>`).join('');
+  fModule.disabled = mods.length === 0;
+}
+
+function render(){
+  refreshModules();
+  const filtered = currentScope().filter(d=>{
+    if(fModule.value && d.module !== fModule.value) return false;
+    if(activeTypes.size && !activeTypes.has(d.type)) return false;
+    return true;
+  });
+
+  if(DROOS.length === 0){
+    resultsCount.textContent = '';
+    resultsArea.innerHTML = `
+      <div class="empty">
+        <h3>The archive is empty — for now</h3>
+        <p>Lessons are on their way. We're currently collecting Primary Education materials, module by module.</p>
+      </div>`;
+    return;
+  }
+
+  if(filtered.length === 0){
+    resultsCount.textContent = '';
+    resultsArea.innerHTML = `
+      <div class="empty">
+        <h3>Nothing here yet</h3>
+        <p>Try widening your search, or check back once more lessons are added.</p>
+      </div>`;
+    return;
+  }
+
+  resultsCount.textContent = `${filtered.length} file${filtered.length === 1 ? '' : 's'}`;
+  resultsArea.innerHTML = `<div class="grid">` + filtered.map(d=>`
+    <div class="file-card">
+      <div class="badges">
+        <span class="badge">Year ${d.year} · Semester ${d.semester}</span>
+        <span class="badge">${d.module}</span>
+        <span class="badge type">${d.type}</span>
+      </div>
+      <h3>${d.title}</h3>
+      <a class="open" href="${d.url}" target="_blank" rel="noopener">Open file</a>
+    </div>
+  `).join('') + `</div>`;
+}
+
+fYear.addEventListener('change', ()=>{ refreshSemesters(); render(); });
+fSem.addEventListener('change', render);
+fModule.addEventListener('change', render);
+
+refreshSemesters();
+render();
+
+/* ---------- about modal ---------- */
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutBackdrop = document.getElementById('aboutBackdrop');
+const aboutClose = document.getElementById('aboutClose');
+const socialLinks = document.getElementById('socialLinks');
+
+if(SOCIAL_LINKS.length === 0){
+  socialLinks.innerHTML = '<span class="modal-social-empty">Social links coming soon.</span>';
+} else {
+  socialLinks.innerHTML = SOCIAL_LINKS.map(s=>`<a href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join('');
+}
+
+function openAbout(){ aboutBackdrop.classList.add('open'); }
+function closeAbout(){ aboutBackdrop.classList.remove('open'); }
+
+aboutBtn.addEventListener('click', openAbout);
+aboutClose.addEventListener('click', closeAbout);
+aboutBackdrop.addEventListener('click', e=>{ if(e.target === aboutBackdrop) closeAbout(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeAbout(); });
+</script>
+
+</body>
+</html>
